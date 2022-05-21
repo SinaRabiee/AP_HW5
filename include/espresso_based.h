@@ -3,8 +3,14 @@
 
 #include "ingredient.h"
 #include "sub_ingredients.h"
+#include <chrono>
+#include <ftxui/dom/elements.hpp>
+#include <ftxui/screen/screen.hpp>
+#include <iomanip>
 #include <iostream>
+#include <random>
 #include <string>
+#include <thread>
 #include <vector>
 
 class EspressoBased {
