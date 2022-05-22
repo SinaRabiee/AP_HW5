@@ -4,14 +4,17 @@ void EspressoBased::brew()
 {
     using namespace std::chrono_literals;
 
-    auto b1 = ftxui::dbox({ ftxui::text("Brewing " + this->get_name()) | ftxui::color(ftxui::Color::Red) | ftxui::bold | ftxui::center | ftxui::border });
+    auto b1 = ftxui::hbox({
+        ftxui::filler(),
+        ftxui::text("Brewing " + this->get_name()) | ftxui::color(ftxui::Color::Red) | ftxui::bold | ftxui::center | ftxui::border | ftxui::blink,
+        ftxui::filler(),
+    });
     auto screenb1 = ftxui::Screen::Create(ftxui::Dimension::Full(), ftxui::Dimension::Fit(b1));
     ftxui::Render(screenb1, b1);
     screenb1.Print();
-    for (auto& i : this->get_ingredients()) {
-        auto screen = ftxui::Screen::Create(ftxui::Dimension::Full(), ftxui::Dimension::Fit(b1));
-        std::string reset_position;
 
+    for (auto& i : this->get_ingredients()) {
+        std::string reset_position;
         std::random_device seeder;
         std::default_random_engine red { seeder() };
         std::default_random_engine green { seeder() };
@@ -20,8 +23,9 @@ void EspressoBased::brew()
         auto R { distribution(red) };
         auto G { distribution(green) };
         auto B { distribution(blue) };
-
+        size_t j {};
         for (double percentage { 0.0 }; percentage <= 1.002; percentage += 0.002) {
+            j++;
             std::string completed = std::to_string(int(percentage * 100)) + "/100";
 
             std::stringstream T;
@@ -29,24 +33,29 @@ void EspressoBased::brew()
             T << i->get_name();
             T << " :";
 
-            auto filling = ftxui::hbox({
-                ftxui::text(T.str()) | ftxui::color(ftxui::Color::RGB(R, G, B)),
-                ftxui::gauge(percentage) | ftxui::color(ftxui::Color::RGB(R, G, B)),
-                ftxui::text(" " + completed) | ftxui::color(ftxui::Color::RGB(R, G, B)),
+            auto filling = ftxui::dbox({
+                ftxui::hbox({
+                    ftxui::text(T.str()) | ftxui::color(ftxui::Color::RGB(R, G, B)),
+                    ftxui::gauge(percentage) | ftxui::color(ftxui::Color::RGB(R, G, B)),
+                    ftxui::text(" " + completed) | ftxui::color(ftxui::Color::RGB(R, G, B)),
+                }),
+                ftxui::hbox({ std::move(ftxui::spinner(5, j) | ftxui::bold) }),
             });
-            Render(screen, filling);
+            auto screen = ftxui::Screen::Create(ftxui::Dimension::Full(), ftxui::Dimension::Fit(filling));
+            ftxui::Render(screen, filling);
             std::cout << reset_position;
             screen.Print();
             reset_position = screen.ResetPosition();
             std::this_thread::sleep_for(0.01s);
         }
     }
-    std::string reset_position;
+
     auto b2 = ftxui::dbox({ ftxui::text("Your " + this->get_name() + " is ready. ENJOY!!") | ftxui::color(ftxui::Color::Green) | ftxui::bold | ftxui::center });
     auto screenb2 = ftxui::Screen::Create(ftxui::Dimension::Full(), ftxui::Dimension::Fit(b2));
     ftxui::Render(screenb2, b2);
     screenb2.Print();
 
+    std::string reset_position;
     for (int index = 0; index < 50; ++index) {
         std::random_device seeder;
         std::default_random_engine red { seeder() };

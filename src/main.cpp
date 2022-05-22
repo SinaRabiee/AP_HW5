@@ -8,8 +8,10 @@
 
 int main(int argc, char** argv)
 {
-    if (false) // make false to run unit-tests
+    if (true) // make false to run unit-tests
     {
+        Cappuccino cappuccino {};
+        cappuccino.brew();
         // debug section
 
     } else {
